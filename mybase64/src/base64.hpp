@@ -38,18 +38,27 @@ namespace base64
       i += 3;
     } // 成组的直接交给encode_triplet处理
 
-    if(i < input.size()){
-      std::array<std::uint8_t, 3> last_triplet{};
-      for(int j = 0; j < input.size() - i; ++j){
-        last_triplet[j] = input[i+j];
-      }
-      auto triplet = encode_triplet(last_triplet);
-      output.append(triplet.data(), triplet.size());
-      for(int j = 0; j < 3 - (input.size() - i); ++j){
-        output.push_back('=');
-      }
-    } // 处理最后不足3个字节的情况
+    int remaining_chars = input.size() - i;
+    
+    if(remaining_chars == 2){
+      std::array<std::uint8_t, 3> temp{input[i], input[i+1], 0};
+      auto triplet = encode_triplet(temp);
+      output.append(triplet.data(), 3);
+      output += '=';
+    }
+    else if(remaining_chars == 1){
+      std::array<std::uint8_t, 3> temp{input[i], 0, 0};
+      auto triplet = encode_triplet(temp);
+      output.append(triplet.data(), 2);
+      output += "==";
+    }
+
     return output;
+  }
+
+  std::string encode_str(std::string_view input)
+  {
+    return encode({reinterpret_cast<std::uint8_t const *>(input.data()), input.size()});
   }
 
 } // namespace base64
