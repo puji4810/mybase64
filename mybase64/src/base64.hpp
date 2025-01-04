@@ -99,11 +99,11 @@ std::vector<uint8_t> decode(std::string_view input) {
   }
   std::string remaining = static_cast<std::string>(input.substr(i));
   if (remaining[2] == '=' && remaining[3] == '=') {
-    std::string quad_str = remaining.substr(0, 1) + "AA";
+    std::string quad_str = remaining.substr(0, 2) + "AA";
     auto quad = decode_quad(quad_str);
     output.insert(output.end(), quad.begin(), quad.begin() + 1);
   } else if (remaining[3] == '=') {
-    std::string quad_str = remaining.substr(0, 2) + "A";
+    std::string quad_str = remaining.substr(0, 3) + "A";
     auto quad = decode_quad(quad_str);
     output.insert(output.end(), quad.begin(), quad.begin() + 2);
   } else {
